@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Khumbulekhaya - Investments{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div class="welcome-message">
+        <h2>Investments Portfolio</h2>
+        <p>Manage your investments and explore opportunities</p>
+    </div>
+</div>
+
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-chart-line"></i>
+            Investment Performance
+        </h2>
+        <button class="btn">
+            <i class="fas fa-chart-pie"></i> Portfolio
+        </button>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Investment Performance</h3>
+            </div>
+            <p>Your portfolio has grown by 8.2% in the last 30 days</p>
+            <div class="chart-container">
+                <canvas id="investmentChart"></canvas>
+            </div>
+            <button class="btn btn-block">
+                <i class="fas fa-project-diagram"></i> View Details
+            </button>
+        </div>
+        
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Investment Opportunities</h3>
+            </div>
+            <p>Based on your profile, we recommend these opportunities:</p>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active">Property</div>
+                    <div class="tab">Stocks</div>
+                    <div class="tab">Business</div>
+                </div>
+                
+                <div class="tab-content active">
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <h4>Johannesburg Housing Project</h4>
+                                <p>12% projected return • Minimum R 5,000</p>
+                            </div>
+                            <div class="task-date">Closes Apr 15</div>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <h4>Commercial Property Fund</h4>
+                                <p>9% projected return • Minimum R 3,000</p>
+                            </div>
+                            <div class="task-date">Closes Mar 30</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="btn btn-block">
+                <i class="fas fa-search"></i> Explore Opportunities
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

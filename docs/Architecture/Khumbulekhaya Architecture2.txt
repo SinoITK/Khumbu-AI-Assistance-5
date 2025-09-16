@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khumbulekhaya - System Architecture</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #0c4b33;
+            --secondary: #6db33f;
+            --accent: #f9ca24;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        h3 {
+            color: var(--dark);
+            margin: 20px 0 15px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        .architecture-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 1100px) {
+            .architecture-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .layer-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .layer-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .layer-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .layer-header h3 {
+            margin: 0;
+            color: var(--primary);
+        }
+        
+        .component-list {
+            list-style: none;
+        }
+        
+        .component-list li {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .component-list i {
+            color: var(--secondary);
+            width: 20px;
+        }
+        
+        .tech-pill {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .data-flow {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .flow-diagram {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        @media (max-width: 900px) {
+            .flow-diagram {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+        
+        .flow-step {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .flow-step:not(:last-child):after {
+            content: "→";
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.8rem;
+            color: var(--gray);
+            z-index: 1;
+        }
+        
+        @media (max-width: 900px) {
+            .flow-step:not(:last-child):after {
+                content: "↓";
+                right: 50%;
+                top: auto;
+                bottom: -25px;
+                transform: translateX(50%);
+            }
+        }
+        
+        .flow-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+        }
+        
+        .database-schema {
+            background: #e4efe9;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .tables-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .table-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin: -20px -20px 15px -20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-columns {
+            list-style: none;
+        }
+        
+        .table-columns li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .table-columns li:last-child {
+            border-bottom: none;
+        }
+        
+        .column-name {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .column-type {
+            color: var(--gray);
+        }
+        
+        .api-endpoints {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .endpoint {
+            padding: 15px;
+            border-radius: 8px;
+            background: var(--light);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .method {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            min-width: 70px;
+            text-align: center;
+        }
+        
+        .get { background: #d4edda; color: #155724; }
+        .post { background: #d1ecf1; color: #0c5460; }
+        .put { background: #fff3cd; color: #856404; }
+        .delete { background: #f8d7da; color: #721c24; }
+        
+        .endpoint-path {
+            font-family: monospace;
+            flex-grow: 1;
+        }
+        
+        .deployment {
+            background: #e4efe9;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .deployment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .deploy-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .deploy-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .toggle-details {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Khumbulekhaya System Architecture</h1>
+            <p class="subtitle">Comprehensive technical architecture for development team</p>
+        </header>
+        
+        <div class="content">
+            <div class="section">
+                <h2>System Overview</h2>
+                <p>Khumbulekhaya is a distributed web application with a microservices-inspired architecture. The system is designed for scalability, maintainability, and high availability.</p>
+                
+                <div class="architecture-container">
+                    <div class="layer-card">
+                        <div class="layer-header">
+                            <div class="layer-icon">
+                                <i class="fas fa-desktop"></i>
+                            </div>
+                            <h3>Presentation Layer</h3>
+                        </div>
+                        
+                        <ul class="component-list">
+                            <li>
+                                <i class="fas fa-layer-group"></i>
+                                <div>
+                                    <strong>Web Application</strong>
+                                    <span class="tech-pill">HTML/CSS/JS</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Responsive single-page application with modular component architecture. Uses Chart.js for data visualization.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-mobile-alt"></i>
+                                <div>
+                                    <strong>Mobile Applications</strong>
+                                    <span class="tech-pill">PWA First</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Progressive Web App with plans for React Native cross-platform apps. Offline capability with service workers.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fab fa-whatsapp"></i>
+                                <div>
+                                    <strong>WhatsApp Interface</strong>
+                                    <span class="tech-pill">Twilio API</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        WhatsApp Business API integration for AI assistant communication and notifications.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-robot"></i>
+                                <div>
+                                    <strong>AI Chat Interface</strong>
+                                    <span class="tech-pill">WebSockets</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Real-time chat interface with WebSocket connections for immediate responses.
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="layer-card">
+                        <div class="layer-header">
+                            <div class="layer-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <h3>Application Layer</h3>
+                        </div>
+                        
+                        <ul class="component-list">
+                            <li>
+                                <i class="fab fa-python"></i>
+                                <div>
+                                    <strong>Django Application Server</strong>
+                                    <span class="tech-pill">Python/Django</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        RESTful API with Django REST Framework. Handles business logic, authentication, and request processing.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-brain"></i>
+                                <div>
+                                    <strong>AI Service</strong>
+                                    <span class="tech-pill">Python AI</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        NLP processing, recommendation algorithms, and automation workflows.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-tasks"></i>
+                                <div>
+                                    <strong>Background Workers</strong>
+                                    <span class="tech-pill">Celery</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Asynchronous task processing for reports, notifications, and calculations.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-bolt"></i>
+                                <div>
+                                    <strong>API Gateway</strong>
+                                    <span class="tech-pill">NGINX</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Request routing, rate limiting, and SSL termination.
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="layer-card">
+                        <div class="layer-header">
+                            <div class="layer-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h3>Data Layer</h3>
+                        </div>
+                        
+                        <ul class="component-list">
+                            <li>
+                                <i class="fas fa-database"></i>
+                                <div>
+                                    <strong>Primary Database</strong>
+                                    <span class="tech-pill">PostgreSQL</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Main operational database with JSONB support for flexible data structures.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-redo"></i>
+                                <div>
+                                    <strong>Cache Layer</strong>
+                                    <span class="tech-pill">Redis</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Session storage, rate limiting, and temporary data storage.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-file-alt"></i>
+                                <div>
+                                    <strong>File Storage</strong>
+                                    <span class="tech-pill">AWS S3</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Document and media storage with CDN distribution for performance.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-search"></i>
+                                <div>
+                                    <strong>Search Engine</strong>
+                                    <span class="tech-pill">Elasticsearch</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Full-text search for business listings, skills, and services.
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="layer-card">
+                        <div class="layer-header">
+                            <div class="layer-icon">
+                                <i class="fas fa-plug"></i>
+                            </div>
+                            <h3>Integration Layer</h3>
+                        </div>
+                        
+                        <ul class="component-list">
+                            <li>
+                                <i class="fas fa-money-check-alt"></i>
+                                <div>
+                                    <strong>Payment Gateway</strong>
+                                    <span class="tech-pill">PayFast</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        South African payment processing with support for multiple payment methods.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-sms"></i>
+                                <div>
+                                    <strong>SMS Service</strong>
+                                    <span class="tech-pill">Twilio</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        SMS notifications and verification messages.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-id-card"></i>
+                                <div>
+                                    <strong>KYC Verification</strong>
+                                    <span class="tech-pill">Google Vision API</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        ID document verification and facial recognition for KYC compliance.
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-map-marked-alt"></i>
+                                <div>
+                                    <strong>Mapping Service</strong>
+                                    <span class="tech-pill">Google Maps API</span>
+                                    <button class="toggle-details">Details</button>
+                                    <div class="details" style="display: none; margin-top: 10px; font-size: 0.9rem;">
+                                        Location services for travel module and business listings.
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Data Flow Architecture</h2>
+                <p>Understanding how data moves through the system is crucial for implementation and debugging.</p>
+                
+                <div class="data-flow">
+                    <h3>User Request Flow</h3>
+                    
+                    <div class="flow-diagram">
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h4>User Request</h4>
+                            <p>HTTP request from client</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4>API Gateway</h4>
+                            <p>Authentication & routing</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h4>Application Logic</h4>
+                            <p>Business logic processing</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h4>Data Access</h4>
+                            <p>Database operations</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-reply"></i>
+                            </div>
+                            <h4>Response</h4>
+                            <p>JSON response to client</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Asynchronous Processing Flow</h3>
+                    
+                    <div class="flow-diagram">
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <h4>Task Creation</h4>
+                            <p>User triggers async task</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <h4>Queue</h4>
+                            <p>Task added to Redis queue</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <h4>Celery Worker</h4>
+                            <p>Processes async task</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <h4>Notification</h4>
+                            <p>User notified of completion</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="flow-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <h4>Result Storage</h4>
+                            <p>Result stored in database</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Database Schema Overview</h2>
+                <p>Core data models that form the foundation of the application.</p>
+                
+                <div class="database-schema">
+                    <div class="tables-container">
+                        <div class="table-card">
+                            <div class="table-header">
+                                <h4>User</h4>
+                                <span>users</span>
+                            </div>
+                            <ul class="table-columns">
+                                <li><span class="column-name">id</span> <span class="column-type">UUID</span></li>
+                                <li><span class="column-name">email</span> <span class="column-type">VARCHAR</span></li>
+                                <li><span class="column-name">phone</span> <span class="column-type">VARCHAR</span></li>
+                                <li><span class="column-name">password_hash</span> <span class="column-type">VARCHAR</span></li>
+                                <li><span class="column-name">kyc_status</span> <span class="column-type">ENUM</span></li>
+                                <li><span class="column-name">created_at</span> <span class="column-type">TIMESTAMP</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="table-card">
+                            <div class="table-header">
+                                <h4>Stokvel Group</h4>
+                                <span>stokvel_groups</span>
+                            </div>
+                            <ul class="table-columns">
+                                <li><span class="column-name">id</span> <span class="column-type">UUID</span></li>
+                                <li><span class="column-name">name</span> <span class="column-type">VARCHAR</span></li>
+                                <li><span class="column-name">description</span> <span class="column-type">TEXT</span></li>
+                                <li><span class="column-name">contribution_amount</span> <span class="column-type">DECIMAL</span></li>
+                                <li><span class="column-name">contribution_frequency</span> <span class="column-type">ENUM</span></li>
+                                <li><span class="column-name">created_at</span> <span class="column-type">TIMESTAMP</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="table-card">
+                            <div class="table-header">
+                                <h4>Investment</h4>
+                                <span>investments</span>
+                            </div>
+                            <ul class="table-columns">
+                                <li><span class="column-name">id</span> <span class="column-type">UUID</span></li>
+                                <li><span class="column-name">user_id</span> <span class="column-type">UUID</span></li>
+                                <li><span class="column-name">amount</span> <span class="column-type">DECIMAL</span></li>
+                                <li><span class="column-name">investment_type</span> <span class="column-type">ENUM</span></li>
+                                <li><span class="column-name">projected_return</span> <span class="column-type">DECIMAL</span></li>
+                                <li><span class="column-name">status</span> <span class="column-type">ENUM</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="table-card">
+                            <div class="table-header">
+                                <h4>Business Listing</h4>
+                                <span>business_listings</span>
+                            </div>
+                            <ul class="table-columns">
+                                <li><span class="column-name">id</span> <span class="column-type">UUID</span></li>
+                                <li><span class="column-name">owner_id</span> <span class="column-type">UUID</span></li>
+                                <li><span class="column-name">name</span> <span class="column-type">VARCHAR</span></li>
+                                <li><span class="column-name">category</span> <span class="column-type">VARCHAR</span></li>
+                                <li><span class="column-name">description</span> <span class="column-type">TEXT</span></li>
+                                <li><span class="column-name">location</span> <span class="column-type">GEOGRAPHY</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>API Endpoints Overview</h2>
+                <p>Key RESTful endpoints that power the application.</p>
+                
+                <div class="api-endpoints">
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/investments/projection</span>
+                    </div>
+                    
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/savings/contribution</span>
+                    </div>
+                    
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/business/listings</span>
+                    </div>
+                    
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/travel/calculate</span>
+                    </div>
+                    
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/ai/chat</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Deployment Architecture</h2>
+                <p>How the application will be deployed and scaled.</p>
+                
+                <div class="deployment">
+                    <div class="deployment-options">
+                        <div class="deploy-card">
+                            <div class="deploy-icon">
+                                <i class="fab fa-aws"></i>
+                            </div>
+                            <h3>AWS Deployment</h3>
+                            <p>EC2 instances, RDS PostgreSQL, Elasticache Redis, S3 storage</p>
+                        </div>
+                        
+                        <div class="deploy-card">
+                            <div class="deploy-icon">
+                                <i class="fab fa-docker"></i>
+                            </div>
+                            <h3>Containerization</h3>
+                            <p>Docker containers with Docker Compose for development</p>
+                        </div>
+                        
+                        <div class="deploy-card">
+                            <div class="deploy-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <h3>CI/CD Pipeline</h3>
+                            <p>GitHub Actions for automated testing and deployment</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Khumbulekhaya System Architecture - Comprehensive technical documentation</p>
+            <p>© 2024 - Detailed architecture for development team reference</p>
+        </footer>
+    </div>
+
+    <script>
+        // Toggle details visibility
+        document.querySelectorAll('.toggle-details').forEach(button => {
+            button.addEventListener('click', function() {
+                const details = this.nextElementSibling;
+                if (details.style.display === 'none') {
+                    details.style.display = 'block';
+                    this.textContent = 'Hide';
+                } else {
+                    details.style.display = 'none';
+                    this.textContent = 'Details';
+                }
+            });
+        });
+        
+        // Initialize all details as hidden
+        document.querySelectorAll('.details').forEach(detail => {
+            detail.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

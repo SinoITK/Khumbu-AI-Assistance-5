@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khumbulekhaya System Architecture</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #0c4b33;
+            --secondary: #6db33f;
+            --accent: #f9ca24;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        h3 {
+            color: var(--dark);
+            margin: 20px 0 15px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .arch-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .arch-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .arch-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .arch-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .arch-header h3 {
+            margin: 0;
+            color: var(--primary);
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .tech-item {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tech-item i {
+            color: var(--secondary);
+        }
+        
+        .key-features {
+            list-style: none;
+            margin: 15px 0;
+        }
+        
+        .key-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .key-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .key-features i {
+            color: var(--secondary);
+        }
+        
+        .system-flow {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .flow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .flow-step {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .flow-step:not(:last-child):after {
+            content: "→";
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--gray);
+        }
+        
+        @media (max-width: 768px) {
+            .flow-step:not(:last-child):after {
+                content: "↓";
+                right: 50%;
+                top: auto;
+                bottom: -25px;
+                transform: translateX(50%);
+            }
+            
+            .flow-step {
+                width: 100%;
+            }
+            
+            .flow-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-weight: bold;
+        }
+        
+        .integration-points {
+            background: #e4efe9;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .integration-list {
+            list-style: none;
+        }
+        
+        .integration-list li {
+            padding: 15px;
+            border-bottom: 1px solid rgba(12, 75, 51, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .integration-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .integration-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .timeline {
+            margin: 40px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 40px;
+        }
+        
+        .timeline-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            flex-grow: 1;
+        }
+        
+        .timeline-date {
+            min-width: 120px;
+            text-align: right;
+            padding-right: 30px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .timeline-item {
+                flex-direction: column;
+            }
+            
+            .timeline-date {
+                text-align: left;
+                padding: 0 0 10px 0;
+            }
+        }
+        
+        .team-roles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .role-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .role-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+        }
+        
+        .role-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Khumbulekhaya System Architecture</h1>
+            <p class="subtitle">A comprehensive guide for the development team</p>
+        </header>
+        
+        <div class="content">
+            <div class="section">
+                <h2>System Overview</h2>
+                <p>Khumbulekhaya is a comprehensive web application with AI integration designed to modernize stokvel operations. It combines investment management, business services, and travel coordination with an AI assistant to automate operations and provide 24/7 member support.</p>
+                
+                <div class="architecture-grid">
+                    <div class="arch-card">
+                        <div class="arch-header">
+                            <div class="arch-icon">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                            <h3>Savings Module</h3>
+                        </div>
+                        <p>Manages member savings, contributions, and stokvel operations.</p>
+                        
+                        <div class="tech-stack">
+                            <div class="tech-item"><i class="fab fa-python"></i> Django Models</div>
+                            <div class="tech-item"><i class="fas fa-database"></i> PostgreSQL</div>
+                            <div class="tech-item"><i class="fas fa-calculator"></i> Financial Calculations</div>
+                        </div>
+                        
+                        <ul class="key-features">
+                            <li><i class="fas fa-check"></i> Savings goals tracking</li>
+                            <li><i class="fas fa-check"></i> Contribution management</li>
+                            <li><i class="fas fa-check"></i> Stokvel group features</li>
+                            <li><i class="fas fa-check"></i> Withdrawal requests</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="arch-card">
+                        <div class="arch-header">
+                            <div class="arch-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Investment Module</h3>
+                        </div>
+                        <p>Handles investment projections, portfolio management, and opportunity discovery.</p>
+                        
+                        <div class="tech-stack">
+                            <div class="tech-item"><i class="fas fa-calculator"></i> Projection Algorithms</div>
+                            <div class="tech-item"><i class="fas fa-chart-bar"></i> Chart.js</div>
+                            <div class="tech-item"><i class="fas fa-database"></i> Historical Data</div>
+                        </div>
+                        
+                        <ul class="key-features">
+                            <li><i class="fas fa-check"></i> Investment projections</li>
+                            <li><i class="fas fa-check"></i> Portfolio tracking</li>
+                            <li><i class="fas fa-check"></i> Opportunity discovery</li>
+                            <li><i class="fas fa-check"></i> Risk assessment</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="arch-card">
+                        <div class="arch-header">
+                            <div class="arch-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <h3>Business Module</h3>
+                        </div>
+                        <p>Facilitates business networking, service marketplace, and skills database.</p>
+                        
+                        <div class="tech-stack">
+                            <div class="tech-item"><i class="fas fa-store"></i> Marketplace Engine</div>
+                            <div class="tech-item"><i class="fas fa-database"></i> Skills Database</div>
+                            <div class="tech-item"><i class="fas fa-search"></i> Search Algorithms</div>
+                        </div>
+                        
+                        <ul class="key-features">
+                            <li><i class="fas fa-check"></i> Business marketplace</li>
+                            <li><i class="fas fa-check"></i> Skills database</li>
+                            <li><i class="fas fa-check"></i> Service requests</li>
+                            <li><i class="fas fa-check"></i> Business Assist feature</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="arch-card">
+                        <div class="arch-header">
+                            <div class="arch-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <h3>Travel Module</h3>
+                        </div>
+                        <p>Manages travel coordination, expense calculation, and ride-sharing.</p>
+                        
+                        <div class="tech-stack">
+                            <div class="tech-item"><i class="fas fa-calculator"></i> Expense Calculator</div>
+                            <div class="tech-item"><i class="fas fa-map-marked-alt"></i> Mapping APIs</div>
+                            <div class="tech-item"><i class="fas fa-users"></i> Matching Algorithm</div>
+                        </div>
+                        
+                        <ul class="key-features">
+                            <li><i class="fas fa-check"></i> Expense calculator</li>
+                            <li><i class="fas fa-check"></i> Ride sharing</li>
+                            <li><i class="fas fa-check"></i> Trip coordination</li>
+                            <li><i class="fas fa-check"></i> Savings tracking</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="arch-card">
+                        <div class="arch-header">
+                            <div class="arch-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h3>AI Assistant</h3>
+                        </div>
+                        <p>Provides intelligent support, automation, and recommendations.</p>
+                        
+                        <div class="tech-stack">
+                            <div class="tech-item"><i class="fab fa-python"></i> Python AI</div>
+                            <div class="tech-item"><i class="fab fa-whatsapp"></i> WhatsApp API</div>
+                            <div class="tech-item"><i class="fas fa-brain"></i> NLP Processing</div>
+                        </div>
+                        
+                        <ul class="key-features">
+                            <li><i class="fas fa-check"></i> Chat interface</li>
+                            <li><i class="fas fa-check"></i> Task automation</li>
+                            <li><i class="fas fa-check"></i> Quick actions</li>
+                            <li><i class="fas fa-check"></i> Smart recommendations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="arch-card">
+                        <div class="arch-header">
+                            <div class="arch-icon">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <h3>Backend Infrastructure</h3>
+                        </div>
+                        <p>Provides the foundation for the entire application.</p>
+                        
+                        <div class="tech-stack">
+                            <div class="tech-item"><i class="fab fa-python"></i> Django Framework</div>
+                            <div class="tech-item"><i class="fas fa-database"></i> PostgreSQL</div>
+                            <div class="tech-item"><i class="fas fa-bolt"></i> Celery</div>
+                        </div>
+                        
+                        <ul class="key-features">
+                            <li><i class="fas fa-check"></i> RESTful APIs</li>
+                            <li><i class="fas fa-check"></i> User authentication</li>
+                            <li><i class="fas fa-check"></i> Database models</li>
+                            <li><i class="fas fa-check"></i> Background tasks</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>System Flow & Data Architecture</h2>
+                <p>Understanding how data flows through the system is crucial for implementation.</p>
+                
+                <div class="system-flow">
+                    <h3>User Request Flow</h3>
+                    
+                    <div class="flow-steps">
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <h4>User Request</h4>
+                            <p>User interacts with frontend UI</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <h4>API Gateway</h4>
+                            <p>Request routed to appropriate service</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <h4>Business Logic</h4>
+                            <p>Django processes the request</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <h4>Data Access</h4>
+                            <p>Database operations performed</p>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">5</div>
+                            <h4>Response</h4>
+                            <p>JSON response returned to frontend</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="integration-points">
+                    <h3>Key Integration Points</h3>
+                    
+                    <ul class="integration-list">
+                        <li>
+                            <div class="integration-icon">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h4>WhatsApp Business API</h4>
+                                <p>For AI assistant communication and notifications</p>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="integration-icon">
+                                <i class="fas fa-money-check-alt"></i>
+                            </div>
+                            <div>
+                                <h4>Payment Gateway</h4>
+                                <p>For processing contributions, withdrawals, and payments</p>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="integration-icon">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <div>
+                                <h4>KYC Verification Service</h4>
+                                <p>For member identification and verification</p>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <div class="integration-icon">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <div>
+                                <h4>Mapping Services</h4>
+                                <p>For travel module location services</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Development Timeline & Priorities</h2>
+                <p>Strategic approach to implementation based on requirements and dependencies.</p>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 1</div>
+                        <div class="timeline-content">
+                            <h3>Core Infrastructure</h3>
+                            <p>Set up Django project, database models, authentication system, and basic API endpoints.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 2</div>
+                        <div class="timeline-content">
+                            <h3>Savings & Investments</h3>
+                            <p>Implement savings management, investment projections, and financial calculations.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 3</div>
+                        <div class="timeline-content">
+                            <h3>Business & Travel Modules</h3>
+                            <p>Develop business marketplace, skills database, and travel coordination features.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 4</div>
+                        <div class="timeline-content">
+                            <h3>AI Integration</h3>
+                            <p>Implement AI assistant, WhatsApp integration, and automation features.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 5</div>
+                        <div class="timeline-content">
+                            <h3>Mobile Applications</h3>
+                            <p>Develop iOS and Android apps with core functionality.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Team Roles & Responsibilities</h2>
+                <p>Clear division of responsibilities for efficient development.</p>
+                
+                <div class="team-roles">
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Backend Developers</h3>
+                        <p>Django API development, database design, and server infrastructure</p>
+                    </div>
+                    
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h3>Frontend Developers</h3>
+                        <p>UI implementation, responsive design, and client-side functionality</p>
+                    </div>
+                    
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Mobile Developers</h3>
+                        <p>iOS and Android app development with React Native/Flutter</p>
+                    </div>
+                    
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>AI/ML Engineers</h3>
+                        <p>AI assistant development, NLP processing, and recommendation algorithms</p>
+                    </div>
+                    
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>DevOps/Security</h3>
+                        <p>Infrastructure, deployment, security, and compliance</p>
+                    </div>
+                    
+                    <div class="role-card">
+                        <div class="role-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <h3>QA Testers</h3>
+                        <p>Testing, bug reporting, and quality assurance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Khumbulekhaya System Architecture Guide - For Development Team Reference</p>
+            <p>© 2024 - Comprehensive technical documentation</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple animation for the architecture cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const archCards = document.querySelectorAll('.arch-card');
+            
+            archCards.forEach((card, index) => {
+                // Add delay based on index for staggered animation
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('fade-in');
+            });
+            
+            // Add hover effect to flow steps
+            const flowSteps = document.querySelectorAll('.flow-step');
+            flowSteps.forEach(step => {
+                step.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.12)';
+                });
+                
+                step.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.05)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

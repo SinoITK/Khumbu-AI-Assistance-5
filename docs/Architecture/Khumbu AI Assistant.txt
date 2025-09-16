@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Khumbulekhaya</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #0c4b33;
+            --secondary: #6db33f;
+            --accent: #f9ca24;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+            --ai-bubble: #e4efe9;
+            --user-bubble: #6db33f;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            padding: 0;
+        }
+        
+        .ai-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            height: 70vh;
+        }
+        
+        @media (max-width: 968px) {
+            .ai-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .sidebar {
+            background: var(--light);
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+        
+        .capabilities {
+            margin-bottom: 30px;
+        }
+        
+        .capabilities h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .capability-list {
+            list-style: none;
+        }
+        
+        .capability-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .capability-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .capability-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--ai-bubble);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .quick-tasks {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .quick-tasks h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .task-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .task-btn {
+            padding: 10px;
+            background: var(--light);
+            border: none;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .task-btn:hover {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .task-btn i {
+            font-size: 1.2rem;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .ai-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .ai-info h3 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .ai-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 18px;
+            position: relative;
+            line-height: 1.5;
+        }
+        
+        .ai-message {
+            background: var(--ai-bubble);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .user-message {
+            background: var(--user-bubble);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .chat-input input {
+            flex-grow: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .chat-input input:focus {
+            border-color: var(--secondary);
+        }
+        
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .send-btn:hover {
+            background: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .suggestions {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 15px;
+            overflow-x: auto;
+        }
+        
+        .suggestion {
+            padding: 10px 15px;
+            background: var(--light);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .suggestion:hover {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .modules-section {
+            padding: 30px;
+            background: var(--light);
+        }
+        
+        .modules-section h2 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .module-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--ai-bubble);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .module-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .module-card p {
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .module-card .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .module-card .btn:hover {
+            background: var(--primary);
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .ai-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+            
+            .task-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Khumbu AI Assistant</h1>
+            <p class="subtitle">Your intelligent companion for managing savings, investments, business, and travel</p>
+        </header>
+        
+        <div class="content">
+            <div class="ai-container">
+                <div class="sidebar">
+                    <div class="capabilities">
+                        <h3><i class="fas fa-star"></i> AI Capabilities</h3>
+                        <ul class="capability-list">
+                            <li class="capability-item">
+                                <div class="capability-icon">
+                                    <i class="fas fa-comment-dots"></i>
+                                </div>
+                                <span>24/7 Chat Support</span>
+                            </li>
+                            <li class="capability-item">
+                                <div class="capability-icon">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <span>Financial Calculations</span>
+                            </li>
+                            <li class="capability-item">
+                                <div class="capability-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <span>Smart Recommendations</span>
+                            </li>
+                            <li class="capability-item">
+                                <div class="capability-icon">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <span>Task Automation</span>
+                            </li>
+                            <li class="capability-item">
+                                <div class="capability-icon">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <span>Proactive Reminders</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="quick-tasks">
+                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        <div class="task-grid">
+                            <button class="task-btn">
+                                <i class="fas fa-file-invoice"></i>
+                                <span>Generate Report</span>
+                            </button>
+                            <button class="task-btn">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Schedule Meeting</span>
+                            </button>
+                            <button class="task-btn">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>Send Payment</span>
+                            </button>
+                            <button class="task-btn">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Investment Advice</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="ai-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="ai-info">
+                            <h3>Khumbu Assistant</h3>
+                            <p>Online • Ready to help</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-messages">
+                        <div class="message ai-message">
+                            <p>Hello Thandi! I'm your Khumbu AI Assistant. How can I help you today?</p>
+                            <div class="message-time">10:00 AM</div>
+                        </div>
+                        
+                        <div class="message user-message">
+                            <p>Hi, can you show me my investment performance?</p>
+                            <div class="message-time">10:01 AM</div>
+                        </div>
+                        
+                        <div class="message ai-message">
+                            <p>Your investments have grown by 8.2% this month. Your property fund is performing particularly well with a 12% return. Would you like to see a detailed breakdown?</p>
+                            <div class="message-time">10:02 AM</div>
+                        </div>
+                        
+                        <div class="message user-message">
+                            <p>Yes, please. Also, can you help me schedule a meeting with my business advisor?</p>
+                            <div class="message-time">10:03 AM</div>
+                        </div>
+                        
+                        <div class="message ai-message">
+                            <p>I'd be happy to help with both! Here's your investment performance report. For the meeting, I see your advisor has availability this Thursday at 2 PM or Friday at 10 AM. Which would you prefer?</p>
+                            <div class="message-time">10:04 AM</div>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestions">
+                        <div class="suggestion">Show investment report</div>
+                        <div class="suggestion">Schedule meeting</div>
+                        <div class="suggestion">Business tips</div>
+                        <div class="suggestion">Travel savings</div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <input type="text" placeholder="Type your message here...">
+                        <button class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modules-section">
+                <h2>AI Assistant Integration</h2>
+                <div class="modules-grid">
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <h3>Savings</h3>
+                        <p>Get personalized savings advice and automated contributions</p>
+                        <button class="btn">Explore</button>
+                    </div>
+                    
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Investments</h3>
+                        <p>AI-powered investment recommendations and portfolio management</p>
+                        <button class="btn">Explore</button>
+                    </div>
+                    
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3>Business</h3>
+                        <p>Business insights, client management, and growth strategies</p>
+                        <button class="btn">Explore</button>
+                    </div>
+                    
+                    <div class="module-card">
+                        <div class="module-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h3>Travel</h3>
+                        <p>Smart travel planning, cost savings, and ride coordination</p>
+                        <button class="btn">Explore</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Khumbu AI Assistant - Your 24/7 companion for financial growth and community building</p>
+            <p>© 2024 - Powered by advanced AI technology</p>
+        </footer>
+    </div>
+
+    <script>
+        // Chat functionality
+        const chatMessages = document.querySelector('.chat-messages');
+        const chatInput = document.querySelector('.chat-input input');
+        const sendButton = document.querySelector('.send-btn');
+        const suggestions = document.querySelectorAll('.suggestion');
+        
+        // Auto-scroll to bottom of chat
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Add message to chat
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user-message' : 'ai-message');
+            
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageDiv.innerHTML = `
+                <p>${text}</p>
+                <div class="message-time">${time}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+        
+        // Send message
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                chatInput.value = '';
+                
+                // Simulate AI response after a delay
+                setTimeout(() => {
+                    // Simple response logic
+                    let response;
+                    if (message.toLowerCase().includes('investment') || message.toLowerCase().includes('portfolio')) {
+                        response = "Your investment portfolio has grown by 8.2% this month. Would you like me to generate a detailed report?";
+                    } else if (message.toLowerCase().includes('business')) {
+                        response = "I can help with business planning, client management, or growth strategies. What specifically do you need assistance with?";
+                    } else if (message.toLowerCase().includes('travel') || message.toLowerCase().includes('trip')) {
+                        response = "I found several ride-sharing options that could save you up to 40% on your travel costs. Would you like to see them?";
+                    } else if (message.toLowerCase().includes('saving') || message.toLowerCase().includes('budget')) {
+                        response = "Based on your spending patterns, I can help you save an additional R 500 per month. Would you like to set up automated savings?";
+                    } else {
+                        response = "I'm here to help with your financial journey. How can I assist you today?";
+                    }
+                    
+                    addMessage(response);
+                }, 1000);
+            }
+        }
+        
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Suggestions click
+        suggestions.forEach(suggestion => {
+            suggestion.addEventListener('click', () => {
+                chatInput.value = suggestion.textContent;
+                sendMessage();
+            });
+        });
+        
+        // Quick tasks
+        const taskButtons = document.querySelectorAll('.task-btn');
+        taskButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const task = button.querySelector('span').textContent;
+                
+                // Simulate task execution
+                let response;
+                if (task === 'Generate Report') {
+                    response = "I've generated your financial report. It will be sent to your email and also available in your dashboard.";
+                } else if (task === 'Schedule Meeting') {
+                    response = "Let me check your calendar. What day and time would work best for you?";
+                } else if (task === 'Send Payment') {
+                    response = "I can help you send payments securely. Who would you like to pay and how much?";
+                } else if (task === 'Investment Advice') {
+                    response = "Based on your risk profile, I recommend diversifying with our new property fund offering 9% returns.";
+                }
+                
+                addMessage(`I'd like to ${task.toLowerCase()}.`, true);
+                
+                setTimeout(() => {
+                    addMessage(response);
+                }, 1000);
+            });
+        });
+        
+        // Initialize with suggestions
+        setTimeout(() => {
+            addMessage("You can ask me about your investments, business growth, travel savings, or anything else related to your financial journey!");
+        }, 1500);
+    </script>
+</body>
+</html>

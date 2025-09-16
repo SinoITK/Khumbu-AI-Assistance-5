@@ -1,0 +1,525 @@
+# Combined Stokvel and Khumbulekhaya Data Model
+
+## Core Member Management (Unified)
+
+### 1. Member *(Primary Entity)*
+**Attributes:**
+- `member_id` (UUID PK)
+- `whatsapp_number` (Unique, required)
+- `full_name` (Encrypted, required)
+- `phone_number`
+- `email`
+- `stokvel_tier`: Enum[Savings, Investment, Wealth]
+- `stokvel_status`: Enum[Active, Suspended, Exited]
+- `kyc_status`: Enum[Pending, Verified, Rejected]
+- `id_image_url`
+- `created_at`
+- `last_auth_at`
+- `preferred_language`: Enum[en, zu, xh, af]
+- `biometric_id` (Encrypted)
+- `join_date`
+- `total_savings` (Decimal, default 0.00)
+- `total_investment` (Decimal, default 0.00)
+- `stokfella_reference_number` (Unique identifier)
+
+**Relationships:**
+- 1→M: Contribution, Loan, Withdrawal, Fine, MoodLog, AILog, DocumentVerification, Savings, Transaction, Investment, ExpenseSummary, Trip, Vehicle, Business, Skill, Notification, UserAgreement
+- M→1: Role
+- M→M: ExecutiveCommittee, AdvisoryCouncil (via junction tables)
+
+## Financial Management
+
+### 2. Contribution *(Stokvel Financial)*
+**Attributes:**
+- `contribution_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `amount` (Decimal, required)
+- `type`: Enum[Regular, Penalty, AdminFee]
+- `timestamp` (required)
+- `approved_by` (FK→ExecutiveCommittee)
+
+**Relationships:**
+- 1→1: Transaction (via explicit FK)
+
+### 3. Savings *(Khumbulekhaya Financial)*
+**Attributes:**
+- `savings_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `amount` (Decimal, required)
+- `date` (Timestamp, default current)
+
+**Relationships:**
+- 1→M: Transaction for deposits and withdrawals
+
+### 4. Investment *(Combined Investment Entity)*
+**Attributes:**
+- `investment_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `investment_type`: Enum[Property, Stock, Business, GroupInvestment]
+- `start_date` (required)
+- `initial_amount_invested` (Decimal, required)
+- `total_amount_invested` (Decimal)
+- `expected_return_rate` (Decimal)
+- `projected_value_after_1_month` (Decimal)
+- `projected_value_after_1_year` (Decimal)
+- `actual_roi` (Decimal)
+- `status`: Enum[Active, Closed]
+- `company_logo` (URL)
+- `company_description` (Text)
+- `investment_brochure` (URL)
+- `investment_term`: Enum[Short, Long]
+- `observed_risk`: Enum[Low, Medium, High]
+
+**Relationships:**
+- 1→M: Transaction, UserAgreement
+- 1→1: InvestmentProjection
+
+### 5. InvestmentProjection
+**Attributes:**
+- `projection_id` (UUID PK)
+- `member_id` (FK→Member, nullable for general projections)
+- `investment_type`: Enum[Property, Stock, Business, GroupInvestment]
+- `projected_amount` (Decimal)
+- `projection_status`: Enum[Pending, Accepted, Rejected]
+- `projected_return_1_month` (Decimal)
+- `projected_return_6_months` (Decimal)
+- `projected_return_1_year` (Decimal)
+- `projection_date` (Date, required)
+- `contribution_type`: Enum[OnceOff, Monthly]
+- `monthly_contribution_amount` (Decimal, nullable)
+- `one_time_deposit_amount` (Decimal, nullable)
+
+### 6. Loan *(Stokvel Financial)*
+**Attributes:**
+- `loan_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `amount` (Decimal, required)
+- `interest_rate` (Decimal)
+- `status`: Enum[Pending, Approved, Rejected]
+- `requested_at` (required)
+- `repayment_due_date`
+
+**Relationships:**
+- 1→M: LoanApproval
+- 1→1: Transaction
+
+### 7. LoanApproval *(Stokvel Process)*
+**Attributes:**
+- `approval_id` (UUID PK)
+- `loan_id` (FK→Loan, required)
+- `approver_id` (FK→ExecutiveCommittee, required)
+- `status`: Enum[Pending, Approved, Rejected]
+
+### 8. Withdrawal *(Combined Withdrawal)*
+**Attributes:**
+- `withdrawal_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `amount` (Decimal, required)
+- `status`: Enum[Pending, Approved, Rejected]
+- `reason`
+- `approved_at`
+- `approver_id` (FK→ExecutiveCommittee)
+
+**Relationships:**
+- 1→1: Transaction
+
+### 9. Transaction *(Universal Transaction Log)*
+**Attributes:**
+- `transaction_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `related_entity_id` (Flexible FK)
+- `transaction_context`: Enum[Savings, Investment, Loan, Contribution, Withdrawal]
+- `amount` (Decimal, required)
+- `type`: Enum[Credit, Debit]
+- `transaction_type`: Enum[Deposit, Withdrawal, Transfer]
+- `date` (Timestamp, default current)
+- `blockchain_hash`
+- `compliance_check_id` (FK→ComplianceCheck)
+- `verified_by` (FK→Role/ExecutiveCommittee)
+
+### 10. Fine *(Stokvel Financial)*
+**Attributes:**
+- `fine_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `amount` (Decimal, required)
+- `paid` (Boolean, required)
+- `reason`
+
+### 11. Payment *(Combined Payment System)*
+**Attributes:**
+- `payment_id` (UUID PK)
+- `beneficiary_id` (FK→Beneficiary, nullable)
+- `committee_member_id` (FK→ExecutiveCommittee, nullable)
+- `amount` (Decimal, required)
+- `method`: Enum[BankTransfer, EFT, CashDeposit]
+- `status`: Enum[Pending, Confirmed]
+- `type`: Enum[BaseSalary, KPIBonus, BeneficiaryPayout]
+
+### 12. Beneficiary *(Stokvel Financial)*
+**Attributes:**
+- `beneficiary_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `full_name` (Encrypted, required)
+- `relationship`: Enum[Spouse, Child, Parent, Sibling, Other]
+- `percentage_allocation` (Decimal, required)
+
+**Relationships:**
+- 1→M: Payment
+
+## Governance & Management
+
+### 13. ExecutiveCommittee *(Stokvel Governance)*
+**Attributes:**
+- `committee_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `role`: Enum[Chairperson, Treasurer, Secretary]
+
+### 14. AdvisoryCouncil *(Stokvel Governance)*
+**Attributes:**
+- `council_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `role`: Enum[President, Treasurer, Secretary]
+
+### 15. Meeting *(Stokvel Operational)*
+**Attributes:**
+- `meeting_id` (UUID PK)
+- `title` (required)
+- `google_meet_link`
+- `scheduled_time` (required)
+- `host_id` (FK→ExecutiveCommittee, required)
+- `minutes_url`
+
+**Relationships:**
+- 1→M: Vote
+
+### 16. Vote *(Stokvel Governance)*
+**Attributes:**
+- `vote_id` (UUID PK)
+- `meeting_id` (FK→Meeting, required)
+- `member_id` (FK→Member, required)
+- `choice`: Enum[Yes, No, Abstain]
+- `cast_at` (required)
+
+### 17. Task *(Stokvel Operational)*
+**Attributes:**
+- `task_id` (UUID PK)
+- `assignee_id` (FK→ExecutiveCommittee, required)
+- `title` (required)
+- `status`: Enum[Pending, InProgress, Completed]
+- `priority`: Enum[Low, Medium, High]
+
+### 18. ExecutiveCompensationPlan *(Stokvel Governance)*
+**Attributes:**
+- `plan_id` (UUID PK)
+- `role_id` (FK→Role, required)
+- `bonus_amount` (Decimal, required)
+- `kpi_type`: Enum[MeetingsHosted, TasksCompleted]
+
+### 19. ExecutiveKPIRecord *(Stokvel Governance)*
+**Attributes:**
+- `record_id` (UUID PK)
+- `committee_id` (FK→ExecutiveCommittee, required)
+- `plan_id` (FK→ExecutiveCompensationPlan, required)
+- `met_target` (Boolean, required)
+
+## Business & Services (Khumbulekhaya)
+
+### 20. Business
+**Attributes:**
+- `business_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `business_name` (String, required)
+- `business_type` (String)
+- `income_generated` (Decimal, default 0.00)
+- `start_date` (Date)
+- `location` (String)
+- `company_profile` (Text)
+- `company_logo` (URL)
+- `description` (Text)
+
+**Relationships:**
+- 1→M: ExpenseSummary, UserAgreement, BusinessAssist
+
+### 21. Skill
+**Attributes:**
+- `skill_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `skill_name` (String, required)
+- `skill_level`: Enum[Beginner, Intermediate, Expert]
+- `availability`: Enum[FullTime, PartTime]
+- `experience_years` (Integer, default 0)
+
+**Relationships:**
+- 1→M: ExpenseSummary, UserAgreement, BusinessAssist
+
+### 22. BusinessAssist
+**Attributes:**
+- `assist_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `business_id` (FK→Business, required)
+- `skill_id` (FK→Skill, nullable)
+- `assist_details` (Text)
+- `status`: Enum[Pending, Completed]
+
+### 23. Rating
+**Attributes:**
+- `rating_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `entity_rated_id` (Flexible FK)
+- `rating_value` (Integer, 1-5)
+- `comments` (Text)
+- `date` (Timestamp, default current)
+
+## Transportation (Khumbulekhaya)
+
+### 24. Vehicle
+**Attributes:**
+- `vehicle_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `vehicle_type` (String)
+- `available_from` (Date)
+- `available_to` (Date)
+- `trips_completed` (Integer, default 0)
+- `open_for_negotiation` (Boolean, default false)
+- `destination` (String)
+- `is_return_trip` (Boolean, default false)
+- `available_seats` (Integer)
+- `cost_per_seat` (Decimal)
+
+**Relationships:**
+- 1→M: Trip, UserAgreement
+
+### 25. Trip
+**Attributes:**
+- `trip_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `destination` (String, required)
+- `date` (Date, required)
+- `cost` (Decimal, required)
+- `vehicle_id` (FK→Vehicle, nullable)
+- `request_status`: Enum[Pending, Accepted, Rejected]
+- `is_return_trip` (Boolean, default false)
+- `negotiation_status`: Enum[Pending, Accepted, Rejected]
+- `open_for_negotiation` (Boolean, default false)
+- `available_seats` (Integer)
+- `cost_per_seat` (Decimal, nullable)
+- `confirmed_cost` (Decimal, nullable)
+
+**Relationships:**
+- M→M: Member through TripMember for participants
+- 1→M: UserAgreement
+
+### 26. TripMember *(Junction Table)*
+**Attributes:**
+- `trip_id` (FK→Trip, required)
+- `member_id` (FK→Member, required)
+- `role`: Enum[Driver, Passenger]
+
+## Expense Management (Khumbulekhaya)
+
+### 27. ExpenseSummary
+**Attributes:**
+- `expense_summary_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `calculation_date` (Date, required)
+- `daily_travel_expense` (Decimal)
+- `monthly_travel_expense` (Decimal)
+- `yearly_travel_expense` (Decimal)
+- `total_expense` (Decimal)
+- `personal_budget` (Decimal)
+- `potential_savings` (Decimal)
+- `actual_savings` (Decimal)
+- `gap_amount` (Decimal)
+- `income_from_investments` (Decimal)
+- `business_services_used` (Text)
+
+## Access Control & Permissions
+
+### 28. Role *(Combined Access Control)*
+**Attributes:**
+- `role_id` (UUID PK)
+- `name`: Enum[Member, Committee, Admin, User, Treasurer]
+- `permission_level` (Integer, default 1)
+- `permissions` (JSON)
+
+**Relationships:**
+- M→M: Member through MemberRole
+- 1→M: Permission through RolePermission
+
+### 29. MemberRole *(Junction Table)*
+**Attributes:**
+- `member_id` (FK→Member, required)
+- `role_id` (FK→Role, required)
+
+### 30. Permission *(Stokvel Access Control)*
+**Attributes:**
+- `permission_id` (UUID PK)
+- `name` (required)
+- `category`: Enum[Finance, Governance, Business, Transportation]
+
+### 31. RolePermission *(Junction Table)*
+**Attributes:**
+- `role_permission_id` (UUID PK)
+- `role_id` (FK→Role, required)
+- `permission_id` (FK→Permission, required)
+
+## Communication & Notifications
+
+### 32. WhatsAppGroup *(Stokvel Communication)*
+**Attributes:**
+- `group_id` (UUID PK)
+- `admin_id` (FK→ExecutiveCommittee, required)
+- `last_message_at`
+
+### 33. Notification *(Combined Notification System)*
+**Attributes:**
+- `notification_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `message_content` (Text, required)
+- `notification_type`: Enum[Alert, Reminder, Confirmation]
+- `status`: Enum[Unread, Read]
+- `timestamp` (Timestamp, default current)
+
+## AI & Intelligence
+
+### 34. AI_Agent *(Stokvel AI Infrastructure)*
+**Attributes:**
+- `agent_id` (UUID PK)
+- `agent_name` (String, required)
+- `agent_type`: Enum[KYC_Verifier, Financial_Advisor, Compliance_Checker, General_Assistant]
+- `capabilities` (JSON)
+- `version` (String, required)
+- `is_active` (Boolean)
+- `last_updated` (Timestamp)
+- `model_name` (String)
+- `temperature_setting` (Float)
+- `fallback_human_id` (FK→ExecutiveCommittee, nullable)
+
+**Relationships:**
+- 1→M: AILog, AILearningMemory, AIKnowledgeBase, DocumentVerification
+
+### 35. AILog *(Combined AI Interaction Log)*
+**Attributes:**
+- `ai_log_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `message_in` (Encrypted, required)
+- `message_out` (Encrypted)
+- `intent`
+- `confidence_score` (Float)
+- `agent_id` (FK→AI_Agent, required)
+- `timestamp` (Timestamp, default current)
+
+### 36. AILearningMemory *(Stokvel AI)*
+**Attributes:**
+- `memory_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `input_text` (Encrypted, required)
+- `agent_id` (FK→AI_Agent, required)
+- `context_json` (Encrypted)
+
+### 37. AIKnowledgeBase *(Stokvel AI)*
+**Attributes:**
+- `knowledge_id` (UUID PK)
+- `topic` (required)
+- `content` (Encrypted, required)
+- `embedding_vector` (Vector)
+- `agent_id` (FK→AI_Agent, required)
+
+### 38. MoodLog *(Combined Mood Tracking)*
+**Attributes:**
+- `mood_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `mood`: Enum[Happy, Neutral, Sad]
+- `timestamp` (required)
+
+## Compliance & Documentation
+
+### 39. DocumentVerification *(Stokvel Compliance)*
+**Attributes:**
+- `doc_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `doc_type`: Enum[ID, Payslip, BusinessLicense]
+- `agent_id` (FK→AI_Agent, nullable)
+- `verified_by_human` (FK→ExecutiveCommittee, nullable)
+- `verification_status`: Enum[Pending, Verified, Rejected]
+
+### 40. ComplianceCheck *(Stokvel Compliance)*
+**Attributes:**
+- `check_id` (UUID PK)
+- `transaction_id` (FK→Transaction, required)
+- `check_type`: Enum[AML, KYC, FraudDetection]
+- `status`: Enum[Pass, Fail, Review]
+- `notes` (Text)
+
+### 41. Policy *(Stokvel Compliance)*
+**Attributes:**
+- `policy_id` (UUID PK)
+- `title` (required)
+- `content` (Encrypted, required)
+- `version` (required)
+- `approved_by` (FK→AdvisoryCouncil, required)
+
+### 42. AuditLog *(Combined Audit Trail)*
+**Attributes:**
+- `audit_id` (UUID PK)
+- `action_type` (required)
+- `user_id` (FK→Member)
+- `ip_address`
+- `device_fingerprint`
+- `timestamp` (Timestamp, default current)
+
+## Legal & Agreements
+
+### 43. UserAgreement *(Combined Legal Framework)*
+**Attributes:**
+- `agreement_id` (UUID PK)
+- `member_id` (FK→Member, required)
+- `investment_id` (FK→Investment, nullable)
+- `trip_id` (FK→Trip, nullable)
+- `vehicle_id` (FK→Vehicle, nullable)
+- `business_id` (FK→Business, nullable)
+- `skill_id` (FK→Skill, nullable)
+- `agreement_type`: Enum[TermsAndConditions, InvestmentContract, TripContract, VehicleListingContract, BusinessListingContract, SkillContract]
+- `agreement_date` (Date, required)
+- `agreement_version` (String, required)
+- `agreement_content` (Text)
+- `is_active` (Boolean, default true)
+
+## Reporting
+
+### 44. Report *(Combined Reporting)*
+**Attributes:**
+- `report_id` (UUID PK)
+- `report_type`: Enum[Financial, Compliance, Business, Transportation]
+- `format`: Enum[PDF, CSV, JSON]
+- `url` (required)
+- `generated_by` (FK→Member)
+- `generated_at` (Timestamp, default current)
+- `expires_at`
+
+## Key Relationships Summary
+
+**Central Hub Entities:**
+- **Member**: Primary entity connecting all systems
+- **Transaction**: Universal financial activity log
+- **AI_Agent**: Centralized AI intelligence system
+
+**Financial Flow:**
+- Member → Savings/Investment/Contribution → Transaction → Compliance
+- Member → Loan → LoanApproval → Transaction
+- Member → Withdrawal → Transaction
+
+**Business Ecosystem:**
+- Member → Business/Skill → BusinessAssist → Rating
+- Member → Vehicle → Trip → TripMember
+
+**Governance Chain:**
+- Member → ExecutiveCommittee/AdvisoryCouncil → Meeting → Vote
+- ExecutiveCommittee → Task/Payment/Policy approval
+
+**AI Integration Points:**
+- Member → AILog → AI_Agent
+- DocumentVerification → AI_Agent
+- ComplianceCheck → AI_Agent
+
+This combined model supports both the traditional stokvel operations and the modern sharing economy features of Khumbulekhaya, with unified member management, comprehensive financial tracking, and integrated AI-powered assistance.

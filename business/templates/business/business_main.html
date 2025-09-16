@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Khumbulekhaya - Business{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div class="welcome-message">
+        <h2>Business Management</h2>
+        <p>Manage your business operations and track performance</p>
+    </div>
+</div>
+
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-briefcase"></i>
+            Business Overview
+        </h2>
+        <button class="btn">
+            <i class="fas fa-store"></i> My Business
+        </button>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Business Performance</h3>
+            </div>
+            <p>Your catering business has generated R 12,500 in the last 90 days</p>
+            <div class="chart-container">
+                <canvas id="businessChart"></canvas>
+            </div>
+            <button class="btn btn-block">
+                <i class="fas fa-analytics"></i> View Reports
+            </button>
+        </div>
+        
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-tasks"></i>
+                <h3>Business Tasks</h3>
+            </div>
+            <p>Stay on top of your business management tasks:</p>
+            
+            <ul class="task-list">
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <h4>Update Business Profile</h4>
+                        <p>Add new menu items and photos</p>
+                    </div>
+                    <div class="task-date">Due Mar 18</div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox checked"></div>
+                    <div class="task-content">
+                        <h4>Send Client Proposals</h4>
+                        <p>Follow up with 3 potential clients</p>
+                    </div>
+                    <div class="task-date">Completed</div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <h4>Request Business Loan</h4>
+                        <p>Apply for equipment expansion loan</p>
+                    </div>
+                    <div class="task-date">Due Mar 25</div>
+                </li>
+            </ul>
+            
+            <button class="btn btn-block">
+                <i class="fas fa-tasks"></i> View All Tasks
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
