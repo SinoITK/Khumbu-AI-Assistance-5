@@ -1,0 +1,23 @@
+.khumbu-logo {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
+
+.khumbu-logo-small {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
+
+.khumbu-logo-large {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
