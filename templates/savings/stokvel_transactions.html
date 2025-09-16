@@ -1,0 +1,492 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stokvel Transactions - Khumbulekhaya</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: #2c3e50;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0c4b33 0%, #6db33f 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #0c4b33;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #6db33f;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 968px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .summary-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #0c4b33;
+            margin: 10px 0;
+        }
+        
+        .summary-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .transactions-table th,
+        .transactions-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .transactions-table th {
+            background: #e4efe9;
+            color: #0c4b33;
+            font-weight: 600;
+        }
+        
+        .transactions-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .positive {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .negative {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .loan-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: #e4efe9;
+            color: #0c4b33;
+        }
+        
+        .status-paid {
+            background: #e8f5e8;
+            color: #27ae60;
+        }
+        
+        .status-overdue {
+            background: #fde8e8;
+            color: #e74c3c;
+        }
+        
+        .btn {
+            background: #6db33f;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #0c4b33;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin: 20px 0;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-header i {
+            width: 40px;
+            height: 40px;
+            background: #e4efe9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #0c4b33;
+            font-size: 1.2rem;
+        }
+        
+        .card-header h3 {
+            margin: 0;
+            color: #0c4b33;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <div style="background: linear-gradient(135deg, #0c4b33 0%, #6db33f 100%); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="{% static 'docs/logo.png' %}" alt="Khumbulekhaya Logo" class="khumbu-logo-small" style="margin: 0;">
+        </div>
+        <div>
+            <a href="{% url 'dashboard' %}" style="color: white; text-decoration: none; margin-right: 20px;">
+                <i class="fas fa-home"></i> Main Dashboard
+            </a>
+            <a href="{% url 'savings_dashboard' %}" style="color: white; text-decoration: none; margin-right: 20px;">
+                <i class="fas fa-chart-pie"></i> Integrated Overview
+            </a>
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: white; cursor: pointer; padding: 0; font: inherit; text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Stokvel Transactions</h1>
+            <p class="subtitle">Manage your day-to-day stokvel contributions, loan balances, and transactions</p>
+        </header>
+        
+        <div class="content">
+            <!-- Summary Section -->
+            <div class="section">
+                <h2>Stokvel Summary</h2>
+                <div class="dashboard">
+                    <div class="summary-card">
+                        <div class="summary-label">Total Contributions</div>
+                        <div class="summary-value">R 45,800</div>
+                        <div class="summary-label">Since January 2024</div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="summary-label">Current Balance</div>
+                        <div class="summary-value">R 12,350</div>
+                        <div class="summary-label">Available for loans</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="section">
+                <div class="action-buttons">
+                    <button class="btn">
+                        <i class="fas fa-plus"></i> New Contribution
+                    </button>
+                    <button class="btn">
+                        <i class="fas fa-hand-holding-usd"></i> Request Loan
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-history"></i> View History
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Recent Transactions -->
+            <div class="section">
+                <h2>Recent Transactions</h2>
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mar 15, 2024</td>
+                            <td>Monthly Contribution - March</td>
+                            <td>Contribution</td>
+                            <td class="positive">+R 1,000</td>
+                            <td>R 12,350</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 10, 2024</td>
+                            <td>Loan Repayment - Car repairs</td>
+                            <td>Repayment</td>
+                            <td class="positive">+R 500</td>
+                            <td>R 11,350</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 5, 2024</td>
+                            <td>Emergency Loan - Medical</td>
+                            <td>Loan</td>
+                            <td class="negative">-R 2,000</td>
+                            <td>R 10,850</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 1, 2024</td>
+                            <td>Monthly Meeting Fee</td>
+                            <td>Fee</td>
+                            <td class="negative">-R 50</td>
+                            <td>R 12,850</td>
+                        </tr>
+                        <tr>
+                            <td>Feb 25, 2024</td>
+                            <td>Interest Earned</td>
+                            <td>Interest</td>
+                            <td class="positive">+R 150</td>
+                            <td>R 12,900</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Loan Management -->
+            <div class="section">
+                <h2>Loan Management</h2>
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <h3>Active Loans</h3>
+                    </div>
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Loan Date</th>
+                                <th>Purpose</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                                <th>Due Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Feb 15, 2024</td>
+                                <td>Home renovations</td>
+                                <td>R 5,000</td>
+                                <td>R 2,500</td>
+                                <td><span class="loan-status status-active">Active</span></td>
+                                <td>May 15, 2024</td>
+                            </tr>
+                            <tr>
+                                <td>Mar 5, 2024</td>
+                                <td>Medical emergency</td>
+                                <td>R 2,000</td>
+                                <td>R 2,000</td>
+                                <td><span class="loan-status status-active">Active</span></td>
+                                <td>Jun 5, 2024</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Recent Repayments</h3>
+                    </div>
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Loan Purpose</th>
+                                <th>Amount</th>
+                                <th>Remaining</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mar 10, 2024</td>
+                                <td>Car repairs</td>
+                                <td class="positive">+R 500</td>
+                                <td>R 0</td>
+                                <td><span class="loan-status status-paid">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td>Feb 28, 2024</td>
+                                <td>School fees</td>
+                                <td class="positive">+R 1,000</td>
+                                <td>R 0</td>
+                                <td><span class="loan-status status-paid">Paid</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Contribution Schedule -->
+            <div class="section">
+                <h2>Contribution Schedule</h2>
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-calendar"></i>
+                        <h3>Monthly Contributions</h3>
+                    </div>
+                    <p>Your regular contribution schedule and history:</p>
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Paid Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>March 2024</td>
+                                <td>Mar 15, 2024</td>
+                                <td>R 1,000</td>
+                                <td><span class="loan-status status-paid">Paid</span></td>
+                                <td>Mar 15, 2024</td>
+                            </tr>
+                            <tr>
+                                <td>February 2024</td>
+                                <td>Feb 15, 2024</td>
+                                <td>R 1,000</td>
+                                <td><span class="loan-status status-paid">Paid</span></td>
+                                <td>Feb 15, 2024</td>
+                            </tr>
+                            <tr>
+                                <td>January 2024</td>
+                                <td>Jan 15, 2024</td>
+                                <td>R 1,000</td>
+                                <td><span class="loan-status status-paid">Paid</span></td>
+                                <td>Jan 15, 2024</td>
+                            </tr>
+                            <tr>
+                                <td>April 2024</td>
+                                <td>Apr 15, 2024</td>
+                                <td>R 1,000</td>
+                                <td><span class="loan-status status-active">Pending</span></td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Khumbulekhaya Stokvel Management - Managing your community savings and loans</p>
+            <p>© 2024 - Building financial resilience through community support</p>
+        </footer>
+    </div>
+</body>
+</html>

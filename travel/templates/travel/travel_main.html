@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Khumbulekhaya - Travel{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div class="welcome-message">
+        <h2>Travel Services</h2>
+        <p>Manage your travel arrangements and track savings</p>
+    </div>
+</div>
+
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-car"></i>
+            Travel Overview
+        </h2>
+        <button class="btn">
+            <i class="fas fa-road"></i> Plan Trip
+        </button>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-map-marked-alt"></i>
+                <h3>Travel Savings</h3>
+            </div>
+            <p>You've saved R 3,840 through Khumbu Travel this year</p>
+            <div class="chart-container">
+                <canvas id="travelChart"></canvas>
+            </div>
+            <button class="btn btn-block">
+                <i class="fas fa-chart-line"></i> View Analytics
+            </button>
+        </div>
+        
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-calendar"></i>
+                <h3>Upcoming Trips</h3>
+            </div>
+            <p>Your scheduled travel arrangements:</p>
+            
+            <ul class="activity-list">
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Johannesburg to Durban</h4>
+                        <p>Group trip • March 22, 2024</p>
+                    </div>
+                    <div class="activity-amount">R 200</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Office Commute</h4>
+                        <p>Daily ride share • Mon-Fri</p>
+                    </div>
+                    <div class="activity-amount">R 45/day</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Business Conference</h4>
+                        <p>Cape Town • April 5-7, 2024</p>
+                    </div>
+                    <div class="activity-amount">R 850</div>
+                </li>
+            </ul>
+            
+            <button class="btn btn-block">
+                <i class="fas fa-search"></i> Find More Rides
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login History - Khumbulekhaya{% endblock %}
+
+{% block content %}
+<div class="login-history-container">
+    <div class="header">
+        <h1><i class="fas fa-history"></i> Login History</h1>
+        <a href="{% url 'profile' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            Back to Profile
+        </a>
+    </div>
+
+    <div class="history-container">
+        <div class="module-section">
+            <div class="module-header">
+                <h3 class="module-title">
+                    <i class="fas fa-clock"></i>
+                    Recent Login Activity
+                </h3>
+            </div>
+
+            {% if login_history %}
+                <div class="history-list">
+                    {% for login in login_history %}
+                        <div class="history-item {% if not login.successful %}failed{% endif %}">
+                            <div class="history-icon">
+                                {% if login.successful %}
+                                    <i class="fas fa-check-circle"></i>
+                                {% else %}
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                {% endif %}
+                            </div>
+                            <div class="history-details">
+                                <div class="history-info">
+                                    <h4>
+                                        {% if login.successful %}Successful Login{% else %}Failed Login Attempt{% endif %}
+                                    </h4>
+                                    <p class="history-meta">
+                                        <span class="date">{{ login.login_time|date:"M d, Y" }}</span>
+                                        <span class="time">{{ login.login_time|date:"g:i A" }}</span>
+                                        {% if login.ip_address %}
+                                            <span class="ip">IP: {{ login.ip_address }}</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                {% if login.location or login.device_type %}
+                                    <div class="history-location">
+                                        {% if login.location %}
+                                            <span class="location"><i class="fas fa-map-marker-alt"></i> {{ login.location }}</span>
+                                        {% endif %}
+                                        {% if login.device_type %}
+                                            <span class="device"><i class="fas fa-mobile-alt"></i> {{ login.device_type }}</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-history">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>No Login History</h3>
+                    <p>Your login history will appear here once you start logging in to your account.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.login-history-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    color: var(--primary);
+    margin: 0;
+}
+
+.history-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.module-header {
+    padding: 20px 30px;
+    border-bottom: 1px solid #eee;
+    background: var(--light);
+    border-radius: 10px 10px 0 0;
+}
+
+.module-title {
+    color: var(--primary);
+    margin: 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.history-list {
+    padding: 0;
+}
+
+.history-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px 30px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+}
+
+.history-item:hover {
+    background-color: #f8f9fa;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-item.failed {
+    background-color: #fff5f5;
+    border-left: 4px solid #e74c3c;
+}
+
+.history-item.failed:hover {
+    background-color: #ffeaea;
+}
+
+.history-icon {
+    margin-right: 15px;
+    margin-top: 2px;
+}
+
+.history-icon .fas {
+    font-size: 1.2rem;
+}
+
+.history-icon .fa-check-circle {
+    color: #27ae60;
+}
+
+.history-icon .fa-exclamation-triangle {
+    color: #e74c3c;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-info h4 {
+    color: var(--primary);
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.history-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    color: var(--gray);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.history-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-location {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    color: var(--gray);
+    font-size: 0.85rem;
+}
+
+.history-location span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.no-history {
+    text-align: center;
+    padding: 60px 30px;
+    color: var(--gray);
+}
+
+.no-history .fas {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.no-history h3 {
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.no-history p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .history-item {
+        flex-direction: column;
+        padding: 15px 20px;
+    }
+
+    .history-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .history-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .history-location {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .module-header {
+        padding: 15px 20px;
+    }
+}
+</style>
+{% endblock %}

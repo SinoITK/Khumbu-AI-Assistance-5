@@ -1,0 +1,496 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khumbulekhaya - Investments</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/logo.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Reuse your existing dashboard styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #0c4b33;
+            --secondary: #6db33f;
+            --accent: #f9ca24;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background: var(--primary);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+        
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 1.8rem;
+        }
+        
+        .sidebar-logo-image {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .nav-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .welcome-message h2 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .welcome-message p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .module-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .module-title {
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .module-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 968px) {
+            .module-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .module-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .card-header i {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+        
+        .card-header h3 {
+            color: var(--primary);
+        }
+        
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .investment-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .investment-nav-btn {
+            padding: 10px 20px;
+            background: var(--light);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .investment-nav-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .investment-nav-btn:hover:not(.active) {
+            background: #e4efe9;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+             <div class="logo">
+                 <img src="{% static 'docs/logo.png' %}" alt="Khumbulekhaya Logo" class="sidebar-logo-image">
+             </div>
+            
+            <div class="nav-item">
+                <i class="fas fa-home"></i>
+                <a href="{% url 'dashboard' %}" style="color: inherit; text-decoration: none;">
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="nav-item active">
+                <i class="fas fa-chart-line"></i>
+                <span>Investments</span>
+            </div>
+            
+            <div class="nav-item">
+                <i class="fas fa-piggy-bank"></i>
+                <a href="{% url 'savings_dashboard' %}" style="color: inherit; text-decoration: none;">
+                    <span>Savings Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="nav-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <a href="{% url 'logout' %}" style="color: inherit; text-decoration: none;">
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="welcome-message">
+                    <h2>Investment Portfolio</h2>
+                    <p>Manage and analyze your investment performance</p>
+                </div>
+                
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="user-status">
+                            {% if user.is_staff %}Premium Member{% else %}Standard Member{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Investment Navigation -->
+            <div class="investment-nav">
+                <button class="investment-nav-btn active">Portfolio Overview</button>
+                <a href="{% url 'investment_projections' %}" class="investment-nav-btn">Projection Calculator</a>
+            </div>
+            
+            <!-- Portfolio Overview -->
+            <div class="module-section">
+                <div class="module-header">
+                    <h2 class="module-title">
+                        <i class="fas fa-chart-line"></i>
+                        Investment Performance
+                    </h2>
+                    <button class="btn">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+                
+                <div class="module-content">
+                    <div class="module-card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Portfolio Growth</h3>
+                        </div>
+                        <p>Your portfolio has grown by 8.2% in the last 30 days</p>
+                        <div class="chart-container">
+                            <canvas id="investmentChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card">
+                        <div class="card-header">
+                            <i class="fas fa-wallet"></i>
+                            <h3>Portfolio Summary</h3>
+                        </div>
+                        <div style="margin: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Current Value:</span>
+                                <span style="font-weight: bold; color: var(--primary);">R {{ investments }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Total Invested:</span>
+                                <span style="font-weight: bold; color: var(--primary);">R 18,500</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Total Return:</span>
+                                <span style="font-weight: bold; color: var(--secondary);">R 5,680</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                <span>Annual Return:</span>
+                                <span style="font-weight: bold; color: var(--secondary);">8.2%</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'investment_projections' %}" class="btn btn-block">
+                            <i class="fas fa-calculator"></i> Projection Calculator
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Investment Opportunities -->
+            <div class="module-section">
+                <div class="module-header">
+                    <h2 class="module-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Investment Opportunities
+                    </h2>
+                    <button class="btn">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+                
+                <div class="module-content">
+                    <div class="module-card">
+                        <div class="card-header">
+                            <i class="fas fa-building"></i>
+                            <h3>Property Investments</h3>
+                        </div>
+                        <p>High-return property development projects with minimum 10% projected returns</p>
+                        <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <div style="font-weight: 500;">Johannesburg Housing Project</div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--gray); font-size: 0.9rem;">12% return • Min R 5,000</span>
+                                    <span style="color: var(--gray); font-size: 0.9rem;">Closes Apr 15</span>
+                                </div>
+                            </li>
+                            <li style="padding: 8px 0;">
+                                <div style="font-weight: 500;">Commercial Property Fund</div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--gray); font-size: 0.9rem;">9% return • Min R 3,000</span>
+                                    <span style="color: var(--gray); font-size: 0.9rem;">Closes Mar 30</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <button class="btn btn-block">
+                            <i class="fas fa-search"></i> View Properties
+                        </button>
+                    </div>
+                    
+                    <div class="module-card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Stock Opportunities</h3>
+                        </div>
+                        <p>Curated stock picks with strong growth potential in emerging markets</p>
+                        <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <div style="font-weight: 500;">Green Energy ETF</div>
+                                <div style="color: var(--gray); font-size: 0.9rem;">11% projected growth • Low risk</div>
+                            </li>
+                            <li style="padding: 8px 0;">
+                                <div style="font-weight: 500;">Technology Growth Fund</div>
+                                <div style="color: var(--gray); font-size: 0.9rem;">14% projected growth • Medium risk</div>
+                            </li>
+                        </ul>
+                        <button class="btn btn-block">
+                            <i class="fas fa-search"></i> Explore Stocks
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize investment chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const investmentCtx = document.getElementById('investmentChart').getContext('2d');
+            const investmentChart = new Chart(investmentCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [18000, 19500, 21000, 22400, 23100, 24180],
+                        borderColor: 'rgb(12, 75, 51)',
+                        backgroundColor: 'rgba(12, 75, 51, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'R ' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+{% extends 'base.html' %}
+
+{% block title %}Khumbulekhaya - Dashboard{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div class="welcome-message">
+        <h2>Welcome back, {{ user.username }}!</h2>
+        <p>Here's your financial overview for today, {{ current_date }}</p>
+    </div>
+    
+    <div class="user-profile">
+        <div class="user-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div>
+            <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+            <div class="user-status">
+                {% if user.is_staff %}Premium Member{% else %}Standard Member{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-cards">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <div class="stat-content">
+            <h3>R {{ total_balance }}</h3>
+            <p>Total Balance</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-piggy-bank"></i>
+        </div>
+        <div class="stat-content">
+            <h3>R {{ savings }}</h3>
+            <p>Savings</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-content">
+            <h3>R {{ investments }}</h3>
+            <p>Investments</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <div class="stat-content">
+            <h3>R {{ business_income }}</h3>
+            <p>Business Income</p>
+        </div>
+    </div>
+    
+    <!-- Integrated Savings Overview Button -->
+    <div class="stat-card clickable" onclick="location.href='{% url 'stokvel_transactions' %}'">
+        <div class="stat-icon">
+            <i class="fas fa-chart-pie"></i>
+        </div>
+        <div class="stat-content">
+            <h3>Integrated View</h3>
+            <p>Savings Overview</p>
+        </div>
+    </div>
+</div>
+
+<!-- AI Assistant Card -->
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-robot"></i>
+            AI Assistant
+        </h2>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-robot"></i>
+                <h3>Khumbu AI Assistant</h3>
+            </div>
+            <p>Get personalized advice for your financial journey</p>
+            <div style="background: #e4efe9; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div style="width: 30px; height: 30px; background: #0c4b33; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div style="font-size: 0.9rem;">Hello! How can I help today?</div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0;">
+                <div style="padding: 8px; background: #f0f7f0; border-radius: 8px; text-align: center; font-size: 0.8rem;">
+                    <i class="fas fa-piggy-bank"></i> Savings
+                </div>
+                <div style="padding: 8px; background: #f0f7f0; border-radius: 8px; text-align: center; font-size: 0.8rem;">
+                    <i class="fas fa-chart-line"></i> Investments
+                </div>
+                <div style="padding: 8px; background: #f0f7f0; border-radius: 8px; text-align: center; font-size: 0.8rem;">
+                    <i class="fas fa-briefcase"></i> Business
+                </div>
+                <div style="padding: 8px; background: #f0f7f0; border-radius: 8px; text-align: center; font-size: 0.8rem;">
+                    <i class="fas fa-car"></i> Travel
+                </div>
+            </div>
+            <a href="{% url 'ai_assistant' %}" class="btn btn-block">
+                <i class="fas fa-comments"></i> Chat with Assistant
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Integrated Savings Overview Section -->
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-chart-pie"></i>
+            Integrated Savings Overview
+        </h2>
+        <a href="{% url 'stokvel_transactions' %}" class="btn">
+            <i class="fas fa-analytics"></i> View Stokvel Dashboard
+        </a>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-bridge"></i>
+                <h3>Expense Gap Analysis</h3>
+            </div>
+            <p>See how your Khumbulekhaya services are bridging your travel expense gap</p>
+            <div class="coverage-meter">
+                <div class="coverage-progress" id="coverageProgress"></div>
+            </div>
+            <div class="coverage-text">{{ expense_coverage }}% of travel expenses covered</div>
+            <div class="savings-breakdown">
+                <div class="savings-item">
+                    <span class="savings-value">R 15,300</span>
+                    <span class="savings-label">Travel Savings</span>
+                </div>
+                <div class="savings-item">
+                    <span class="savings-value">R 12,500</span>
+                    <span class="savings-label">Business Income</span>
+                </div>
+                <div class="savings-item">
+                    <span class="savings-value">R 10,450</span>
+                    <span class="savings-label">Invest Returns</span>
+                </div>
+            </div>
+            <a href="{% url 'stokvel_transactions' %}" class="btn btn-block">
+                <i class="fas fa-analytics"></i> View Detailed Analysis
+            </a>
+        </div>
+        
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-hand-holding-usd"></i>
+                <h3>Income Sources</h3>
+            </div>
+            <p>Breakdown of how each service contributes to your savings</p>
+            <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                <li style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                    <span><i class="fas fa-car" style="color: var(--secondary); margin-right: 8px;"></i> Khumbu Travel</span>
+                    <span style="font-weight: bold; color: var(--primary);">R 15,300</span>
+                </li>
+                <li style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                    <span><i class="fas fa-briefcase" style="color: var(--secondary); margin-right: 8px;"></i> Khumbu Business</span>
+                    <span style="font-weight: bold; color: var(--primary);">R 12,500</span>
+                </li>
+                <li style="display: flex; justify-content: space-between; padding: 8px 0;">
+                    <span><i class="fas fa-chart-line" style="color: var(--secondary); margin-right: 8px;"></i> Khumbu Invest</span>
+                    <span style="font-weight: bold; color: var(--primary);">R 10,450</span>
+                </li>
+            </ul>
+            <a href="{% url 'stokvel_transactions' %}" class="btn btn-block">
+                <i class="fas fa-chart-line"></i> See Full Breakdown
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Saving Module - Stokvel Transactions -->
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-list"></i>
+            Saving
+        </h2>
+        <a href="{% url 'stokvel_transactions' %}" class="btn">
+            <i class="fas fa-analytics"></i> View Stokvel Dashboard
+        </a>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-hand-holding-usd"></i>
+                <h3>Stokvel Summary</h3>
+            </div>
+            <p>Manage your day-to-day stokvel contributions, loans, and transactions</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                <div style="text-align: center; padding: 10px; background: #f0f7f0; border-radius: 8px;">
+                    <div style="font-size: 1.2rem; font-weight: bold; color: #0c4b33;">R 45,800</div>
+                    <div style="font-size: 0.8rem; color: #7f8c8d;">Total Contributions</div>
+                </div>
+                <div style="text-align: center; padding: 10px; background: #f0f7f0; border-radius: 8px;">
+                    <div style="font-size: 1.2rem; font-weight: bold; color: #0c4b33;">R 12,350</div>
+                    <div style="font-size: 0.8rem; color: #7f8c8d;">Current Balance</div>
+                </div>
+            </div>
+            <ul class="activity-list">
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Monthly Contribution</h4>
+                        <p>March stokvel meeting</p>
+                    </div>
+                    <div class="activity-amount positive">+R 1,000</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-minus"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Emergency Loan</h4>
+                        <p>Medical expenses</p>
+                    </div>
+                    <div class="activity-amount negative">-R 2,000</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Loan Repayment</h4>
+                        <p>Car repairs repayment</p>
+                    </div>
+                    <div class="activity-amount positive">+R 500</div>
+                </li>
+            </ul>
+            <a href="{% url 'stokvel_transactions' %}" class="btn btn-block">
+                <i class="fas fa-list"></i> View All Transactions
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Investments Module -->
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-chart-line"></i>
+            Khumbu Invest
+        </h2>
+        <button class="btn">
+            <i class="fas fa-chart-pie"></i> Portfolio
+            </button>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Investment Performance</h3>
+            </div>
+            <p>Your portfolio has grown by 8.2% in the last 30 days</p>
+            <div class="chart-container">
+                <canvas id="investmentChart"></canvas>
+            </div>
+            <button class="btn btn-block">
+                <i class="fas fa-project-diagram"></i> View Details
+            </button>
+        </div>
+        
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Investment Opportunities</h3>
+            </div>
+            <p>Based on your profile, we recommend these opportunities:</p>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active">Property</div>
+                    <div class="tab">Stocks</div>
+                    <div class="tab">Business</div>
+                </div>
+                
+                <div class="tab-content active">
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <h4>Johannesburg Housing Project</h4>
+                                <p>12% projected return • Minimum R 5,000</p>
+                            </div>
+                            <div class="task-date">Closes Apr 15</div>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <h4>Commercial Property Fund</h4>
+                                <p>9% projected return • Minimum R 3,000</p>
+                            </div>
+                            <div class="task-date">Closes Mar 30</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="btn btn-block">
+                <i class="fas fa-search"></i> Explore Opportunities
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Business Module -->
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-briefcase"></i>
+            Khumbu Business
+        </h2>
+        <button class="btn">
+            <i class="fas fa-store"></i> My Business
+        </button>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Business Performance</h3>
+            </div>
+            <p>Your catering business has generated R 12,500 in the last 90 days</p>
+            <div class="chart-container">
+                <canvas id="businessChart"></canvas>
+            </div>
+            <button class="btn btn-block">
+                <i class="fas fa-analytics"></i> View Reports
+            </button>
+        </div>
+        
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-tasks"></i>
+                <h3>Business Tasks</h3>
+            </div>
+            <p>Stay on top of your business management tasks:</p>
+            
+            <ul class="task-list">
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <h4>Update Business Profile</h4>
+                        <p>Add new menu items and photos</p>
+                    </div>
+                    <div class="task-date">Due Mar 18</div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox checked"></div>
+                    <div class="task-content">
+                        <h4>Send Client Proposals</h4>
+                        <p>Follow up with 3 potential clients</p>
+                    </div>
+                    <div class="task-date">Completed</div>
+                </li>
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <h4>Request Business Loan</h4>
+                        <p>Apply for equipment expansion loan</p>
+                    </div>
+                    <div class="task-date">Due Mar 25</div>
+                </li>
+            </ul>
+            
+            <button class="btn btn-block">
+                <i class="fas fa-tasks"></i> View All Tasks
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Travel Module -->
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-car"></i>
+            Khumbu Travel
+        </h2>
+        <button class="btn">
+            <i class="fas fa-road"></i> Plan Trip
+        </button>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-map-marked-alt"></i>
+                <h3>Travel Savings</h3>
+            </div>
+            <p>You've saved R 3,840 through Khumbu Travel this year</p>
+            <div class="chart-container">
+                <canvas id="travelChart"></canvas>
+            </div>
+            <button class="btn btn-block">
+                <i class="fas fa-chart-line"></i> View Analytics
+            </button>
+        </div>
+        
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-calendar"></i>
+                <h3>Upcoming Trips</h3>
+            </div>
+            <p>Your scheduled travel arrangements:</p>
+            
+            <ul class="activity-list">
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Johannesburg to Durban</h4>
+                        <p>Group trip • March 22, 2024</p>
+                    </div>
+                    <div class="activity-amount">R 200</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Office Commute</h4>
+                        <p>Daily ride share • Mon-Fri</p>
+                    </div>
+                    <div class="activity-amount">R 45/day</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Business Conference</h4>
+                        <p>Cape Town • April 5-7, 2024</p>
+                    </div>
+                    <div class="activity-amount">R 850</div>
+                </li>
+            </ul>
+            
+            <button class="btn btn-block">
+                <i class="fas fa-search"></i> Find More Rides
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Khumbulekhaya - Complete App{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="{% static 'docs/logo.png' %}" alt="Khumbulekhaya Logo" class="sidebar-logo-image">
+            </div>
+            
+            <div class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="fas fa-home"></i>
+                <a href="{% url 'dashboard' %}" style="color: inherit; text-decoration: none;">
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="nav-item {% if request.resolver_match.url_name == 'savings_dashboard' %}active{% endif %}">
+                <i class="fas fa-piggy-bank"></i>
+                <a href="{% url 'savings_dashboard' %}" style="color: inherit; text-decoration: none;">
+                    <span>Savings</span>
+                </a>
+            </div>
+            
+            <div class="nav-item {% if request.resolver_match.url_name == 'investments_main' %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                <a href="{% url 'investments_main' %}" style="color: inherit; text-decoration: none;">
+                    <span>Investments</span>
+                </a>
+            </div>
+            
+            <div class="nav-item {% if request.resolver_match.url_name == 'business_main' %}active{% endif %}">
+                <i class="fas fa-briefcase"></i>
+                <a href="{% url 'business_main' %}" style="color: inherit; text-decoration: none;">
+                    <span>Business</span>
+                </a>
+            </div>
+            
+            <div class="nav-item {% if request.resolver_match.url_name == 'travel_main' %}active{% endif %}">
+                <i class="fas fa-car"></i>
+                <a href="{% url 'travel_main' %}" style="color: inherit; text-decoration: none;">
+                    <span>Travel</span>
+                </a>
+            </div>
+            
+            <div class="nav-item {% if request.resolver_match.url_name == 'ai_assistant' %}active{% endif %}">
+                <i class="fas fa-robot"></i>
+                <a href="{% url 'ai_assistant' %}" style="color: inherit; text-decoration: none;">
+                    <span>AI Assistant</span>
+                </a>
+            </div>
+            
+            <div class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                <i class="fas fa-user-cog"></i>
+                <a href="{% url 'profile' %}" style="color: inherit; text-decoration: none;">
+                    <span>Profile</span>
+                </a>
+            </div>
+            
+            <div class="nav-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font: inherit;">
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <!-- AI Assist Button -->
+    <div class="ai-assist-button" id="aiAssistButton">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- AI Assist Chat Window -->
+    <div class="ai-assist-chat" id="aiAssistChat">
+        <div class="chat-header">
+            <h3><i class="fas fa-robot"></i> AI Assistant</h3>
+            <button class="close-chat" id="closeChat">&times;</button>
+        </div>
+        <div class="chat-messages">
+            <div class="message ai-message">
+                Hi {{ user.username }}! How can I help you with your finances today?
+            </div>
+            <div class="message ai-message">
+                I can help you with savings tips, investment advice, or answer any questions about your financial dashboard.
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type your message here...">
+            <button class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
