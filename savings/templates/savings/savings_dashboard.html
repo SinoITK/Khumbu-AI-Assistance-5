@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Khumbulekhaya - Savings Dashboard{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div class="welcome-message">
+        <h2>Savings Dashboard</h2>
+        <p>Manage your savings and track your financial goals</p>
+    </div>
+</div>
+
+<div class="module-section">
+    <div class="module-header">
+        <h2 class="module-title">
+            <i class="fas fa-piggy-bank"></i>
+            My Savings Overview
+        </h2>
+        <button class="btn">
+            <i class="fas fa-plus"></i> Add Savings
+        </button>
+    </div>
+    
+    <div class="module-content">
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-bullseye"></i>
+                <h3>Savings Goals</h3>
+            </div>
+            <p>You're 65% toward your savings goal of R 30,000</p>
+            <div class="chart-container">
+                <canvas id="savingsChart"></canvas>
+            </div>
+            <button class="btn btn-block">
+                <i class="fas fa-target"></i> View Goals
+            </button>
+        </div>
+        
+        <div class="module-card">
+            <div class="card-header">
+                <i class="fas fa-history"></i>
+                <h3>Recent Activity</h3>
+            </div>
+            <ul class="activity-list">
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Monthly Deposit</h4>
+                        <p>March savings contribution</p>
+                    </div>
+                    <div class="activity-amount positive">+R 2,500</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Stokvel Contribution</h4>
+                        <p>March stokvel meeting</p>
+                    </div>
+                    <div class="activity-amount positive">+R 1,000</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-minus"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Emergency Fund</h4>
+                        <p>Car repairs</p>
+                    </div>
+                    <div class="activity-amount negative">-R 3,200</div>
+                </li>
+            </ul>
+            <button class="btn btn-block">
+                <i class="fas fa-list"></i> View All Activity
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
